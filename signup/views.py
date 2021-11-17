@@ -13,7 +13,7 @@ def index(request):
     return HttpResponse("Olá mundo! Este é um sistema de Login chamado SignUp.")
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST','DELETE','PUT'])
 def api_account(request, account_id=None):
     if request.method == 'GET':
         try:
@@ -29,12 +29,7 @@ def api_account(request, account_id=None):
         account.age = new_account['age']
         account.email = new_account['email']
         account.save()
-        
-    serialized_account = AccountSerializer(account)
-    return Response(serialized_account.data)
-
-@api_view(['DELETE','UPDATE'])
-def api_account_plus(request,account_id):
+    
     if request.method == "DELETE":
         try:
             account = Account.objects.get(id=account_id)
@@ -43,10 +38,9 @@ def api_account_plus(request,account_id):
         
         account.delete()
 
-        serialized_account = AccountSerializer(Account())
-        return Response(serialized_account.data)
+        account = Account()
     
-    if request.method == "UPDATE":
+    if request.method == "PUT":
         try:
             account = Account.objects.get(id=account_id)
         except Account.DoesNotExist:
@@ -72,8 +66,19 @@ def api_account_plus(request,account_id):
         
         account.save()
 
-        account_serializer = AccountSerializer(account)
+        
+    serialized_account = AccountSerializer(account)
+    return Response(serialized_account.data)
 
-        return Response(account_serializer.data)
+@api_view(['GET'])
+
+def api_accounts(request):
+    if request.method == 'GET':
+    
+        accounts = Account.objects.all()
+    
+    accounts_serializer = AccountSerializer(accounts,many=True)
+        
+    return Response(accounts_serializer.data)
 
 
