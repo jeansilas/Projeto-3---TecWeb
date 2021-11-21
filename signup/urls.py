@@ -4,10 +4,10 @@ from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',views.index),
-    path('account/<int:account_id>', views.api_account),
-    path('account/',views.api_account),
-    path('account',views.api_account),
-    path('accounts',views.api_accounts)
+    path('',views.SignUP.index, name="SignUP"),
+    path('account/<int:account_id>', views.SignUP.api_account,name="Accounts"),
+    path('account/',views.SignUP.api_account,name="Accounts"),
+    path('account',views.SignUP.api_account,name="Accounts"),
+    path('accounts',views.SignUP.api_accounts,name="Accounts")
 
 ]
