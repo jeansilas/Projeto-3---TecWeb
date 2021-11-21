@@ -3,8 +3,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.http import Http404
 
-from signup.models import Account
-from .serializers import AccountSerializer
+from signup.models import Account, Tag, Notes
+from .serializers import AccountSerializer, TagSerializer, NotesSerializer
 
 #from django.http import HttpResponse
 
@@ -66,12 +66,13 @@ def api_account(request, account_id=None):
         
         account.save()
 
-        
     serialized_account = AccountSerializer(account)
     return Response(serialized_account.data)
 
+'''
+    retorna todas as contas do banco de dados
+'''
 @api_view(['GET'])
-
 def api_accounts(request):
     if request.method == 'GET':
     
@@ -81,4 +82,59 @@ def api_accounts(request):
         
     return Response(accounts_serializer.data)
 
+
+
+'''
+    retorna todas as tags de um usuário
+'''
+@api_view(['GET'])
+
+def api_account_tags_get(request, account_name):
+    if request.method == 'GET':
+        tags = []
+        accountUser = Account.objects.get(name = account_name)
+        notes = Notes.objects.filter(account = accountUser)
+
+        for note in notes:
+            tags.append(note.tag)
+        
+    tags_serializer = TagSerializer(tags,many=True)
+    return Response(tags_serializer.data)
+
+
+'''
+    retorna as notas de um usuário
+'''
+@api_view(['GET'])
+
+def api_account_notes_get(request, account_name):
+    if request.method == 'GET':
+    
+        accountUser = Account.objects.get(name = account_name)
+        notes = Notes.objects.filter(account = accountUser)
+    
+    notes_serializer = NotesSerializer(notes,many=True)
+        
+    return Response(notes_serializer.data)
+
+'''
+    faz o post de uma nota na conta de um usuário (funcionando)
+'''
+@api_view(['POST'])
+def api_account_note_post(request, account_name):
+    if request.method == 'POST':
+        accountUser = Account.objects.get(name = account_name)
+        
+        
+        tag_note = Tag(tag = request.data['tag'])
+        tag_note.save()
+        
+        titulo = request.data['title']
+        conteudo = request.data['content']
+        usuario = accountUser
+        note = Notes(title = titulo, content=conteudo, account=usuario, tag=tag_note)
+        note.save()
+        
+    note_serializer = NotesSerializer(note)
+    return Response(note_serializer.data)
 
