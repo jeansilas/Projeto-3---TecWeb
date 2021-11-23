@@ -33,7 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
-    'signup.apps.SignupConfig',
+    'signup',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,12 +42,26 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#  'rest_framework.authentication.TokenAuthentication',
+# ),
+# }
+
+
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-        'rest_framework.authentication.TokenAuthentication',
-    ]
+'DEFAULT_AUTHENTICATION_CLASSES':(
+'rest_framework.authentication.TokenAuthentication',
+# for browsable api view usage
+'rest_framework.authentication.SessionAuthentication',
+'rest_framework.authentication.BasicAuthentication',
+
+),
+'DEFAULT_PERMISSION_CLASSES': (
+'rest_framework.permissions.IsAuthenticated',
+),
 }
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

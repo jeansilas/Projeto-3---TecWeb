@@ -1,9 +1,19 @@
 from django.shortcuts import render, HttpResponse
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,authentication_classes,permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.views import APIView
+from django.http.request import HttpRequest
 from django.http import Http404
+from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_protect
+from rest_framework.authtoken.views import obtain_auth_token,Token
+from django.http import JsonResponse
+
+
+
+
 
 from signup.models import Account
 from .serializers import AccountSerializer
@@ -11,7 +21,9 @@ from .serializers import AccountSerializer
 from django.http import HttpResponse
 
 class SignUP(APIView):
-    permissions = [IsAuthenticated,]
+    permissions_classes = [IsAuthenticated]
+
+
     def index(request):
         return HttpResponse("Olá mundo! Este é um sistema de Login chamado SignUp.")
 
@@ -19,21 +31,30 @@ class SignUP(APIView):
     @api_view(['GET', 'POST','DELETE','PUT'])
     def api_account(request, account_id=None):
         if request.method == 'GET':
+            # permissions_classes = [IsAuthenticated,]
             try:
                 account = Account.objects.get(id=account_id)
             except Account.DoesNotExist:
                 raise Http404()
         
-        if request.method == 'POST':
-            account = Account()
-            new_account = request.data
-            account.name = new_account['name']
-            account.content = new_account['content']
-            account.age = new_account['age']
-            account.email = new_account['email']
-            account.save()
+        # if request.method == 'POST':
+        #     #Creating User
+        #     user = User.objects.create_user(request.data['username'],request.data['email'],request.data['password'])
+            
+        #     user.save()
+
+        #     #Creating Account
+
+        #     account = Account()
+        #     new_account = request.data
+        #     account.user = user
+        #     account.name = new_account['name']
+        #     account.age = new_account['age']
+
+        #     account.save()
         
         if request.method == "DELETE":
+            # permissions_classes = [IsAuthenticated,]
             try:
                 account = Account.objects.get(id=account_id)
             except Account.DoesNotExist:
@@ -44,6 +65,7 @@ class SignUP(APIView):
             account = Account()
         
         if request.method == "PUT":
+            # permissions_classes = [IsAuthenticated,]
             try:
                 account = Account.objects.get(id=account_id)
             except Account.DoesNotExist:
@@ -61,11 +83,8 @@ class SignUP(APIView):
             
             #Updating email
             if updated_account['email'] != "" and updated_account['email'] != None:
-                account.email = updated_account['email']
+                account.user.email = updated_account['email']
             
-            #Updating content
-            if updated_account['content'] != "" and updated_account['content'] != None:
-                account.content = updated_account['content']
             
             account.save()
 
@@ -76,6 +95,7 @@ class SignUP(APIView):
     @api_view(['GET'])
     def api_accounts(request):
         if request.method == 'GET':
+            # permissions_classes = [IsAuthenticated,]
             
         
             accounts = Account.objects.all()
@@ -83,5 +103,30 @@ class SignUP(APIView):
         accounts_serializer = AccountSerializer(accounts,many=True)
             
         return Response(accounts_serializer.data)
+    
+@api_view(['POST'])
+@authentication_classes([])
+@permission_classes([])
+def create(request):
+    if request.method == 'POST':
+        #Creating User
+        user = User.objects.create_user(request.data['username'],request.data['email'],request.data['password'])
+        
+        user.save()
+
+        #Creating Account
+
+        account = Account()
+        new_account = request.data
+        account.user = user
+        account.name = new_account['name']
+        account.age = new_account['age']
+
+        account.save()
+
+        token = Token.objects.create(user=user)
+        Token_json = {"Token":str(token)}
+    serialized_account = AccountSerializer(account)
+    return JsonResponse(Token_json)
 
 
