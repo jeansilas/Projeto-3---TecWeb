@@ -12,5 +12,8 @@ urlpatterns = [
     path("create",views.create,name="User-Account"),
     path('accounts',views.SignUP.api_accounts,name="Accounts"),
     path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
+    path('account/<str:account_name>/notes',views.SignUP.api_account_notes_get),
+    path('account/<str:account_name>/note',views.SignUP.api_account_note_post),
+    path('account/<str:account_name>/tags',views.SignUP.api_account_tags_get),
 
 ]
