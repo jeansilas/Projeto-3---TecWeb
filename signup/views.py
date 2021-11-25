@@ -164,7 +164,7 @@ class SignUP(APIView):
 def create(request):
     if request.method == 'POST':
         #Creating User
-        user = User.objects.create_user(request.data['username'],request.data['email'],request.data['password'])
+        user = User.objects.create_user(request.data['user'],request.data['email'],request.data['password'])
         
         user.save()
 
