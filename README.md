@@ -12,7 +12,7 @@ https://logon2signup.herokuapp.com/
 - Jean Silas
 
 ## Arquitetura da API
-![Arquitetura-da-API](arquitetura-p3.jpg?raw=true "Title")
+![Arquitetura-da-API](Slide1.JPG?raw=true "Title")
 
 
 ## Tutorial
